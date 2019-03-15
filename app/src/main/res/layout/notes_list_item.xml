@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/selectableItem"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content" >
+
+    <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <TextView
+            android:id="@+id/tv_note_title"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:ellipsize="end"
+            android:gravity="center_vertical"
+            android:textColor="@color/black"
+            android:maxLines="1"
+            android:paddingTop="@dimen/padding_top_bottom_date"
+            android:paddingLeft="@dimen/padding_left_right"
+            android:paddingRight="@dimen/padding_left_right"
+            android:text="@null"
+            android:textSize="16sp"
+            android:background="@drawable/background_selector" />
+
+        <TextView
+            android:id="@+id/tv_note_date"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/tv_note_title"
+            android:gravity="end"
+            android:maxLines="1"
+            android:paddingBottom="@dimen/padding_top_bottom_date"
+            android:paddingLeft="@dimen/padding_left_right"
+            android:paddingRight="@dimen/padding_left_right"
+            android:text="@null"
+            android:textSize="12sp"
+            android:background="@drawable/background_selector" />
+
+        <View
+            android:id="@+id/selected_overlay"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@drawable/background_selector"
+            android:visibility="invisible" />
+
+    </RelativeLayout>
+</FrameLayout>
