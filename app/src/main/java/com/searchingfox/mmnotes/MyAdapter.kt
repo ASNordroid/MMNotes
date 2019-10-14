@@ -15,12 +15,15 @@ import android.widget.FrameLayout
 import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.collections.ArrayList
-
 import kotlinx.android.synthetic.main.notes_list_item.view.*
 
-class MyAdapter(items : ArrayList<Note>, private val context: Context, private val mainInterface: MainInterface) :
+class MyAdapter(items : ArrayList<Note>, private val context: Context,
+                private val mainInterface: MainInterface) :
         RecyclerView.Adapter<MyViewHolder>(), ViewHolderClickListener {
-    val TAG = "MyAdapterLog"
+    private val TAG = MyAdapter::class.java.name
+    private var modelList: MutableList<Note> = items  //ArrayList<Note>()
+    val selectedIds: MutableList<Int> = ArrayList()
+
     override fun onLongTap(index: Int) {
         if (!MainActivity.isMultiSelectOn) {
             MainActivity.isMultiSelectOn = true
@@ -51,8 +54,6 @@ class MyAdapter(items : ArrayList<Note>, private val context: Context, private v
         if (selectedIds.size < 1) MainActivity.isMultiSelectOn = false
         mainInterface.mainInterface(selectedIds.size)
     }
-    var modelList: MutableList<Note> = items  //ArrayList<Note>()
-    val selectedIds: MutableList<Int> = ArrayList()
 
     override fun getItemCount() = modelList.size
 
@@ -80,10 +81,12 @@ class MyAdapter(items : ArrayList<Note>, private val context: Context, private v
 
     fun concatSelectedIds() {
         if (selectedIds.size < 2) return
+
         val selectedIdIteration = selectedIds.listIterator()
         val dbHandler = MyDBHandler(context, null)
         var newName = ""
-        for (i in modelList) { // TODO: is this efficient?? change selectedIds to store indexes in RecycleView??
+        // TODO: is this efficient?? change selectedIds to store indexes in RecycleView??
+        for (i in modelList) {
             if (i.id == selectedIds[0]) {
                 newName = i.name!!
             }
@@ -105,7 +108,8 @@ class MyAdapter(items : ArrayList<Note>, private val context: Context, private v
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MyViewHolder {
-        val itemView = LayoutInflater.from(parent.context).inflate(R.layout.notes_list_item, parent, false)
+        val itemView = LayoutInflater.from(parent.context).
+                inflate(R.layout.notes_list_item, parent, false)
         return MyViewHolder(itemView, this)
     }
 
@@ -113,27 +117,26 @@ class MyAdapter(items : ArrayList<Note>, private val context: Context, private v
     override fun onBindViewHolder(holder: MyViewHolder, index: Int) {
         holder.tvNotesTitle.text = modelList[index].name
         val sdf = SimpleDateFormat("dd.MM.yy hh:mm")
-        holder.tvNotesDate.text = sdf.format(Date(modelList[index].lastchanged!!))
+        holder.tvNotesDate.text = sdf.format(Date(modelList[index].lastChanged!!))
         val id = modelList[index].id
 
         if (selectedIds.contains(id)) {
-            //if item is selected then,set foreground color of FrameLayout.
+            // if item is selected set foreground color of FrameLayout
             holder.frameLayout.foreground = ColorDrawable(ContextCompat.getColor(context, R.color.colorControlActivated))
         } else {
-            //else remove selected item color.
+            // else remove selected item color
             holder.frameLayout.foreground = ColorDrawable(ContextCompat.getColor(context, android.R.color.transparent))
         }
     }
 }
 
-class MyViewHolder(itemView: View, val r_tap: ViewHolderClickListener) : RecyclerView.ViewHolder(itemView),
+class MyViewHolder(itemView: View, private val r_tap: ViewHolderClickListener) : RecyclerView.ViewHolder(itemView),
         View.OnLongClickListener, View.OnClickListener {
-
     val tvNotesTitle = itemView.tv_note_title!!
     val tvNotesDate = itemView.tv_note_date!!
     val frameLayout: FrameLayout = itemView.selectableItem
 
-    init {//initialization block
+    init {
         frameLayout.setOnClickListener(this)
         frameLayout.setOnLongClickListener(this)
     }

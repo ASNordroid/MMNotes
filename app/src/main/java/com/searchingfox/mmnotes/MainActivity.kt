@@ -18,13 +18,7 @@ class MainActivity : AppCompatActivity(), MainInterface {
     var myAdapter: MyAdapter? = null
     companion object {
         var isMultiSelectOn = false
-        val TAG = "MainActivityLog"
-    }
-
-    override fun mainInterface(size: Int) {
-        if (actionMode == null) actionMode = startSupportActionMode(ActionModeCallback())
-        if (size > 0) actionMode?.title = "$size"
-        else actionMode?.finish()
+        val TAG = MainActivity::class.java.name
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -55,6 +49,7 @@ class MainActivity : AppCompatActivity(), MainInterface {
         val searchView = menu.findItem(R.id.action_search).actionView as SearchView
         searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
             override fun onQueryTextChange(newText: String): Boolean {
+                // TODO: maybe search here, maybe need caching
                 return false
             }
 
@@ -77,6 +72,11 @@ class MainActivity : AppCompatActivity(), MainInterface {
                 return true
             }
         })
+        menu.findItem(R.id.action_settings).setOnMenuItemClickListener {
+            startActivity(Intent(this@MainActivity,
+                    SettingsActivity::class.java))
+            true
+        }
         return true
     }
 
@@ -84,12 +84,19 @@ class MainActivity : AppCompatActivity(), MainInterface {
         // Handle action bar item clicks here. The action bar will
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
-        val id = item.itemId
 
-        return when (id) {
+        return when (item.itemId) {
             R.id.action_settings -> true
             else -> super.onOptionsItemSelected(item)
         }
+    }
+
+    override fun mainInterface(size: Int) {
+        if (actionMode == null) actionMode = startSupportActionMode(ActionModeCallback())
+        if (size > 0)
+            actionMode?.title = "$size"
+        else
+            actionMode?.finish()
     }
 
     inner class ActionModeCallback : ActionMode.Callback {
@@ -100,15 +107,15 @@ class MainActivity : AppCompatActivity(), MainInterface {
                 R.id.action_delete -> {
                     shouldResetRecyclerView = false
                     myAdapter?.deleteSelectedIds()
-                    actionMode?.title = "" //remove item count from action mode.
+                    actionMode?.title = "" //remove item count from action mode
                     actionMode?.finish()
                     return true
                 }
                 R.id.action_concat -> {
-                    shouldResetRecyclerView = true
+                    // shouldResetRecyclerView = true
                     myAdapter?.concatSelectedIds()
                     myAdapter?.deleteSelectedIds()
-                    actionMode?.title = "" //remove item count from action mode.
+                    actionMode?.title = "" //remove item count from action mode
                     actionMode?.finish()
                     return true
                 }
