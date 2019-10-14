@@ -4,15 +4,15 @@ import android.content.Intent
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.Toolbar
-//import android.util.Log
+import android.util.Log
 import android.widget.EditText
 
 //import java.io.File
 //import android.os.Environment.getExternalStorageDirectory
 //import android.text.Editable
 //import android.text.TextWatcher
+//import java.util.UUID
 import java.util.Date
-import java.util.UUID
 
 // TODO: save periodically: after every letter? every n minutes? n seconds? look at OmniNotes
 
@@ -21,7 +21,7 @@ class NoteEditor : AppCompatActivity() {
     private var editBody: EditText? = null
     private var sentNoteId:Int? = null
 
-    val TAG = "NoteEditor_log"
+    val TAG = NoteEditor::class.java.name
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -68,14 +68,17 @@ class NoteEditor : AppCompatActivity() {
     override fun onBackPressed() {
         val noteContent = editBody?.text.toString()
         var noteTitle = editTitle?.text.toString()
+
         if (noteContent != "") { // TODO: Should I compare strings or something else
             val dbHandler = MyDBHandler(this, null)
             if (sentNoteId != null) {
                 val changedNote = dbHandler.getNote(sentNoteId!!)
                 changedNote?.name = noteTitle
                 changedNote?.content = noteContent
-                changedNote?.lastchanged = Date().time
-                dbHandler.updateNote(changedNote!!) // TODO: this returns boolean
+                changedNote?.lastChanged = Date().time
+                if(!dbHandler.updateNote(changedNote!!)) {
+                    Log.e(TAG, "Note wasn't updated")
+                }
             } else {
                 if (noteTitle == "") {
                     noteTitle = noteContent.take(28) // TODO: manage same names
